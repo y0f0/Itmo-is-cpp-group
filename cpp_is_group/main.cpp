@@ -5,36 +5,34 @@
 #include <sstream>
 #include <iterator>
 
-using namespace std;
 
+std::vector<std::string> Split(const std::string& str) {
 
-vector<string> Split(const string& str) {
-
-    istringstream iss(str);
-    vector<string> results((istream_iterator<string>(iss)),
-                                 istream_iterator<string>());
+    std::istringstream iss(str);
+    std::vector<std::string> results((std::istream_iterator<std::string>(iss)),
+                                 std::istream_iterator<std::string>());
     return results; 
 }
 
 class Report {
 private:
-    vector<string> template_report;
-    vector<string> params;
+    std::vector<std::string> template_report;
+    std::vector<std::string> params;
 public:
-    Report(const vector<string>& new_template_report, const vector<string>& new_params) {
-        template_report = new_template_report;
-        params = new_params; 
-    }
-    vector<vector<string> > GenerateTemplate() {
-        vector<vector<string> > result;
-        for (const string& line : template_report) {
+    Report(const std::vector<std::string>& new_template_report, const std::vector<std::string>& new_params):
+        template_report(new_template_report),
+        params(new_params) {}
+ 
+    std::vector<std::vector<std::string> > GenerateTemplate() {
+        std::vector<std::vector<std::string> > result;
+        for (const std::string& line : template_report) {
             result.push_back(Split(line));
         }
         int i = 0;
-        for (vector<string>& vs : result) {
-            for (string& str : vs) {
+        for (std::vector<std::string>& vs : result) {
+            for (std::string& str : vs) {
                 if (str[0] == '{') {
-                    str = '{' + params[i++] + '}';
+                    str = params[i++]; 
                 }
             }
         }        
@@ -42,12 +40,11 @@ public:
     }
 };
 
+std::vector<std::string> ReadFile(const std::string& path) {
+    std::string line;
+    std::vector<std::string> input_data;
 
-vector<string> ReadFile(const string& path) {
-    string line;
-    vector<string> input_data;
-
-    ifstream in(path); 
+    std::ifstream in(path); 
 
     if (in.is_open()) {
         while (getline(in, line)) {
@@ -61,17 +58,15 @@ vector<string> ReadFile(const string& path) {
 }
 
 
-
-
 int main() {
 
     Report r (ReadFile("input"), ReadFile("params"));
 
-    for (auto v : r.GenerateTemplate()) {
-        for (auto str : v) {
-            cout << str <<  ' ';
+    for (const auto& v : r.GenerateTemplate()) {
+        for (const auto& str : v) {
+            std::cout << str <<  ' ';
         }
-        cout << endl;
+        std::cout << std::endl;
     }
     return 0; 
 }
